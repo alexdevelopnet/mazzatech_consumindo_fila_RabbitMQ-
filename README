@@ -1,0 +1,114 @@
+Desafio: Componente de Recepção de Protocolos para Emissão de Documentos
+Descrição
+Este projeto consiste na criação de um sistema que recebe solicitações de emissão de vias de RG (protocolo), as envia para uma fila no RabbitMQ, e posteriormente processa esses protocolos, armazenando-os em uma base de dados. A API oferece endpoints para consulta de protocolos com autenticação por token JWT.
+
+Funcionalidades
+Publisher (Console App): Envia protocolos (dados mocados em JSON) para uma fila do RabbitMQ.
+Consumer: Consome os protocolos da fila, valida e armazena os dados na base de dados. Se os dados forem inválidos, os logs serão gerados.
+API:
+Consulta de protocolos por Número do Protocolo, CPF ou RG.
+Protegida por JWT Token.
+Validações:
+Não são aceitos protocolos duplicados.
+Cada CPF ou RG pode ter apenas uma via por número.
+Tecnologias Utilizadas
+.NET 6/7
+RabbitMQ (Docker)
+Entity Framework Core (para comunicação com a base de dados)
+JWT Authentication
+Docker (para containerização da aplicação)
+Swagger (para documentação e testes interativos)
+Estrutura do Protocolo
+Os dados do protocolo são:
+
+Número do Protocolo (obrigatório)
+Número da Via (obrigatório) - Primeira via, segunda via, etc.
+CPF (obrigatório) - Sem formatação
+RG (obrigatório)
+Nome Completo (obrigatório)
+Nome da Mãe
+Nome do Pai
+Foto (obrigatório) - Formato jpg ou png
+Requisitos de Validação
+Número do Protocolo: Deve ser único.
+CPF e RG: Não podem ter o mesmo número de via registrado.
+Como Rodar o Projeto Localmente
+Clone o repositório:
+
+bash
+Copiar código
+git clone https://github.com/seuusuario/desafio-recepcao-protocolos.git
+Configuração do RabbitMQ:
+
+Instale o RabbitMQ utilizando o Docker:
+bash
+Copiar código
+docker run -d --hostname rabbitmq --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+Acesse o painel de administração do RabbitMQ: http://localhost:15672 (login padrão: guest/guest).
+Configuração do Banco de Dados:
+
+Configure sua instância de banco de dados.
+Execute os scripts SQL que estão na pasta /scripts.
+Rodar o Publisher:
+
+No diretório do projeto Publisher, execute:
+bash
+Copiar código
+dotnet run
+Rodar o Consumer:
+
+No diretório do projeto Consumer, execute:
+bash
+Copiar código
+dotnet run
+Rodar a API:
+
+No diretório do projeto API, execute:
+bash
+Copiar código
+dotnet run
+Documentação Swagger:
+
+Acesse http://localhost:5000/swagger para ver a documentação da API.
+Endpoints
+GET /api/protocolos/{numeroProtocolo}: Consulta protocolo pelo número.
+GET /api/protocolos/cpf/{cpf}: Consulta protocolos por CPF.
+GET /api/protocolos/rg/{rg}: Consulta protocolos por RG.
+Exemplo de Consulta:
+bash
+Copiar código
+curl -H "Authorization: Bearer <seu_token_jwt>" http://localhost:5000/api/protocolos/cpf/12345678901
+Autenticação
+A API é protegida por JWT Token. Para autenticar, use o endpoint /api/auth/login para obter um token válido.
+
+Testes
+O projeto inclui testes unitários para as principais funcionalidades, como validação de protocolos e regras de negócio.
+
+Para rodar os testes, use:
+
+bash
+Copiar código
+dotnet test
+Logs
+Os logs são gerados para cada operação, tanto no publisher quanto no consumer, para registrar erros e validações.
+
+Como Usar o Docker
+Construir a imagem Docker:
+
+bash
+Copiar código
+docker build -t desafio-recepcao-protocolos .
+Subir a aplicação via Docker:
+
+bash
+Copiar código
+docker-compose up
+Estrutura do Projeto
+/Publisher: Projeto console responsável por enviar os protocolos ao RabbitMQ.
+/Consumer: Projeto que consome a fila e armazena os dados no banco.
+/API: API para consulta dos protocolos.
+Contribuições
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou pull requests.
+
+Licença
+Este projeto está licenciado sob a Licença MIT - consulte o arquivo LICENSE para mais detalhes.
